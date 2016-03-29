@@ -1,0 +1,41 @@
+Use Cases für BassOS 10
+
+Titel aus dem schwarzen Loch auswählen
+	Titelliste (alle Titel)
+	Durch Ordnerstruktur browsen (Tobis_Samsung_Gerät -> Musik -> youtubeConvert -> 10er -> ....mp3)
+
+Titel anzeigen
+	id3 tags anzeigen (echte und die, die automatisch erkannte wurden -> titel - interpret.mp3
+	ursprünglichen filename anzeigen (ohne endung)
+
+Title vom Gerät auswählen
+	%TODO gibt es bei Android eine Upload funktion, wo man einen Android filebrowser verwendet und am Ende auf Upload drückt???
+	%TODO können wir (zumindest eine selbstsignierte) App für iOS bauen???
+
+Musik abspielen
+	Titel aus dem schwarzen Loch auswählen und sofort abspielen
+	Titel aus dem schwarzen Loch auswählen und als nächstes abspielen (vor anderen Songs der Playlist)
+	Titel aus dem schwarzen Loch auswählen und am nach der Playlist abspielen (ans Ende der Playlist einreihen)
+	Titel vom Gerät auswählen, temporär hochladen und sofort abspielen
+	Titel vom Gerät auswählen, temporär hochladen und als nächstes abspielen (vor anderen Songs der Playlist)
+	Titel vom Gerät auswählen, temporär hochladen und am nach der Playlist abspielen (ans Ende der Playlist einreihen)
+	Play
+	Pause
+	Next (aus Playlist)
+	Random an/aus (wenn Playlist zuende wird Random Musik ausgewählt)
+
+Playlist bearbeiten (nur admins)
+	Titel durch drag-n-drop in der Playlist an eine andere Position bewegen
+	Titel aus der Playlsit entfernen
+
+Systemfunktionen (nur admins)
+	WLAN verschlüsselung an und abschalten
+	WLAN Schlüssel ändern
+	Adminpasswort ändern (Passwort um die Adminfunktionen zu erreichen)
+	Airplay an und ausschalten (sobald sound auf Airplay ankommt wird die aktuelle Wiedergabe pausiert und Airplay wiedergegeben)
+	Bluethoot an und ausschalten (wie Airplay)
+	Pi Neustarten
+	
+Schaltersteuerung (nur Admins)
+	Unterboden
+	Hupe (nur aktivieren und deaktivieren -> auslöser immernoch über Button)
