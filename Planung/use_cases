@@ -1,15 +1,26 @@
-Use Cases für BassOS 10
+Use Cases für bassOS10.0
 
 Titel aus dem schwarzen Loch auswählen
 	Titelliste (alle Titel)
+		-> würde ich nicht machen - wenn da mal 10000 Files drauf sind, ist das ne laaange Liste
 	Durch Ordnerstruktur browsen (Tobis_Samsung_Gerät -> Musik -> youtubeConvert -> 10er -> ....mp3)
+		-> hier müssen wir uns noch eine Struktur einfallen lassen
+			*woher weiß bOS das es "Tobis_Samsung_Stick" ist? udev-Alias auslesen? udev-ID's - Beides in Kombination?
+				Gedanke: Lesen wir den Alias aus erstellt bOS eine Struktur beginnend mit dem Alias ("Tobis_Samsung_Stick", etc.)
+				Ändert TOP nun den Alias in "Samsung_ist_doch_kacke", würde er einen zweiten Baum aufbauen.
+				Versuchen wir aber die udev-ID mit dem Alias zu verknüpfen (DB, txt-file, etc.) müsste bOS die Struktur mir der ID beginnen und dann bei der Anzeige, durch den/die Alias/e ersetzen.
 
 Titel anzeigen
-	id3 tags anzeigen (echte und die, die automatisch erkannte wurden -> titel - interpret.mp3
+	id3 tags anzeigen (echte und die, die automatisch erkannte wurden -> titel - interpret.mp3)
+		-> das macht der mpc ja dann schon
+		-> %TODO muss noch testen wie mpd reagiert, wenn keine ID3-Tags vorhanden sind...
 	ursprünglichen filename anzeigen (ohne endung)
+		-> %TODO kann der mpc meine ich auch ... testen!
 
 Title vom Gerät auswählen
 	%TODO gibt es bei Android eine Upload funktion, wo man einen Android filebrowser verwendet und am Ende auf Upload drückt???
+		-> wenn wir eine html5 anwendung basteln, dann wird das gehen
+		-> sonst nur mit einer App
 	%TODO können wir (zumindest eine selbstsignierte) App für iOS bauen???
 
 Musik abspielen
@@ -19,23 +30,35 @@ Musik abspielen
 	Titel vom Gerät auswählen, temporär hochladen und sofort abspielen
 	Titel vom Gerät auswählen, temporär hochladen und als nächstes abspielen (vor anderen Songs der Playlist)
 	Titel vom Gerät auswählen, temporär hochladen und am nach der Playlist abspielen (ans Ende der Playlist einreihen)
+		-> das wiederspricht etwas dem "schwarzen loch"-Prinzip - alles was bOS abspielt, sollte im "Loch" landen.
+		-> daher auch vom Gerät hochgeladene Files - temp-ablage daher eigentlich nicht notwendig...
 	Play
 	Pause
 	Next (aus Playlist)
 	Random an/aus (wenn Playlist zuende wird Random Musik ausgewählt)
+		-> %TODO mpd bietet funktionen um auf events zu reagieren, wenn ich das richtig gelesen habe. vlt lässt sich das ja automatisieren (wenn playlist zuende, dann aktiviere random und play, etc...)
+	Seek? (im akutellen Titel vor und zurük springen? - ist für manchen glaube ich schon wichtig und würde ich auch zu den Grundfunktinen eines Players zählen - funktion im mpc implementiert, müsste nur mittels Web-GUI genutzt werden)
 
 Playlist bearbeiten (nur admins)
 	Titel durch drag-n-drop in der Playlist an eine andere Position bewegen
+		-> das DnD müsste von der GUI verarbeitet werden! mpc kann titel in der playlist nur anhand der nummer in der playlist verschieben.
+		-> GUI muss also:
+			*aktuelle playlist abfragen um nummern der lieder in der playlist zu erhalten
+			*aktuelle playlist darstellen
+			*nach DnD erkennen, welches lied an welche stelle verschoben wurde
+			*mpc command an mpd ausführen
 	Titel aus der Playlsit entfernen
+		-> wie beim DnD, löschen nur mittels der nummer der playlist möglich
 
 Systemfunktionen (nur admins)
 	WLAN verschlüsselung an und abschalten
+		-> Warum Abschalten? =D
 	WLAN Schlüssel ändern
 	Adminpasswort ändern (Passwort um die Adminfunktionen zu erreichen)
 	Airplay an und ausschalten (sobald sound auf Airplay ankommt wird die aktuelle Wiedergabe pausiert und Airplay wiedergegeben)
 	Bluethoot an und ausschalten (wie Airplay)
 	Pi Neustarten
 	
-Schaltersteuerung (nur Admins)
+Schaltersteuerung (nur Admins) -> LED-Anzeige, was grade Aktiv ist und was nicht? (anstelle der schalter aktuell!?) sonst muss man immer auf sein Smartphone schauen ... fände ich lästig ^^
 	Unterboden
 	Hupe (nur aktivieren und deaktivieren -> auslöser immernoch über Button)
