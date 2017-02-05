@@ -1,0 +1,6 @@
+-- Host Bluetooth --
+http://raspberrypi.stackexchange.com/questions/47708/setup-raspberry-pi-3-as-bluetooth-speaker
+
+-- Host Airplay --
+http://www.chickensinenvelopes.net/2016/02/airplay-receiver-with-raspbian-jessie/
+http://www.redsilico.com/multiroom-audio-raspberry-pi
