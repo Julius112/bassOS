@@ -26,7 +26,7 @@ var openConnections = [];
 app.get('/stats', function(req, res) {
  
     // set timeout as high as possible
-    req.socket.setTimeout(Infinity);
+    //req.socket.setTimeout(Infinity);
  
     // send headers for event-stream connection
     // see spec for more information
@@ -54,8 +54,19 @@ app.get('/stats', function(req, res) {
         openConnections.splice(j,1);
     });
 });
+
+app.get('/test', function (req, res, next) {
+    res.setHeader('content-type', 'application/json');
+    res.json({"switch": "LEDs", "status": true});
+    // we walk through each connection
+    openConnections.forEach(function(resp) {
+        var d = new Date();
+        resp.write('id: ' + d.getMilliseconds() + '\n');
+        resp.write('data:' + createMsg() +   '\n\n'); // Note the extra newline
+    });
+});
  
-setInterval(function() {
+/*setInterval(function() {
     // we walk through each connection
     openConnections.forEach(function(resp) {
         var d = new Date();
@@ -63,7 +74,7 @@ setInterval(function() {
         resp.write('data:' + createMsg() +   '\n\n'); // Note the extra newline
     });
  
-}, 1000);
+}, 1000);*/
  
 function createMsg() {
     msg = {};
