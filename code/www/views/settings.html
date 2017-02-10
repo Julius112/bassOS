@@ -1,0 +1,55 @@
+<ons-page ng-controller="settingsCtl">
+	<h3 class="left">Einstellungen</h3>
+<ons-list>
+	<ons-list-header>
+		Dienste
+	</ons-list-header>
+	<ons-list-item>
+		<div class="left">
+			<ons-icon icon="ion-bluetooth" class="list__item__icon"></ons-icon>
+		</div>
+		<div class="center">
+			Bluetooth
+		</div>
+		<label class="right">
+			<ons-switch ng-model="bluetooth_service"></ons-switch>
+		</label>
+	</ons-list-item>
+	<ons-list-item>
+		<div class="left">
+		<ons-icon icon="ion-bluetooth" class="list__item__icon"></ons-icon>
+		</div>
+		<div class="center">
+			<span class="list__item__title">Bluetooth</span>
+			<span class="list__item__subtitle">Kopplung</span>
+		</div>
+		<label class="right">
+			<ons-button ng-disabled="!bluetooth_service">Koppeln</ons-button>
+		</label>
+	</ons-list-item>
+	<ons-list-item>
+		<div class="left">
+			<ons-icon icon="ion-bluetooth" class="list__item__icon"></ons-icon>
+		</div>
+		<div class="center">
+			Airplay
+		</div>
+		<label class="right">
+			<ons-switch ng-model="airplay_service"></ons-switch>
+		</label>
+	</ons-list-item>
+</ons-list>
+<ons-list>
+	<ons-list-header>
+		System
+	</ons-list-header>
+	<ons-list-item>
+		<div class="center">
+			Neustart
+		</div>
+		<label class="right">
+			<ons-button>Neustart</ons-button>
+		</label>
+	</ons-list-item>
+</ons-list>
+</ons-page>

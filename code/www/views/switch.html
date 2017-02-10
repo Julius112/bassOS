@@ -1,0 +1,28 @@
+<ons-page ng-controller="switchCtl">
+	<h3>Schalter</h3>
+	<ons-list>
+		<ons-list-item>
+			<div class="left">
+				<ons-icon icon="ion-ios-lightbulb-outline" class="list__item__icon" ng-show="!switch_unterboden"></ons-icon>
+				<ons-icon icon="ion-ios-lightbulb" class="list__item__icon" ng-show="switch_unterboden"></ons-icon>
+			</div>
+			<div class="center">
+				Unterboden
+			</div>
+			<label class="right">
+				<ons-switch ng-model="switch_unterboden"></ons-switch>
+			</label>
+		</ons-list-item>
+		<ons-list-item>
+			<div class="left">
+				<ons-icon icon="ion-speakerphone" class="list__item__icon"></ons-icon>
+			</div>
+			<div class="center">
+				Hupe
+			</div>
+			<label class="right">
+				<ons-switch ng-model="switch_hupe"></ons-switch>
+			</label>
+		</ons-list-item>
+	</ons-list>
+</ons-page>
