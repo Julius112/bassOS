@@ -19,16 +19,15 @@
 	<link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
 	<link rel="stylesheet" href="css/style.css">
 
-	<script>
-		ons.bootstrap('bassOS');
-	</script>
 </head>
 <body>
 
-<!-- include views -->
+<!-- include controllers -->
+<script src="controllers/sseController.js"></script>
 <script src="controllers/settingsController.js"></script>
 <script src="controllers/switchController.js"></script>
 <script src="controllers/playlistController.js"></script>
+<!-- include views -->
 <div ng-include="'views/settings.html'"></div>
 <div ng-include="'views/playlist.html'"></div>
 <div ng-include="'views/switch.html'"></div>
