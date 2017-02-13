@@ -51,12 +51,12 @@ app.get('/stats', function(req, res) {
 });
 
 function sse_update(data) {
-	console.log("SSE UPDATE: "+data);
+	console.log("SSE UPDATE: "+data.id);
+	id++;
+	/* TODO: handle integer overflow -> probably combination of date.getMilliseconds() and counter */
 	openConnections.forEach(function(resp) {
-		id++;
-		/* TODO: handle integer overflow -> probably combination of date.getMilliseconds() and counter */
 		resp.write('id: ' + id + '\n');
-		resp.write('data:' + data +   '\n\n');
+		resp.write('data:' + JSON.stringify(data) +   '\n\n');
 	});
 }
 
@@ -65,11 +65,11 @@ app.post('/switch', function (req, res) {
 	var state = req.body.state;
 	
 	// TODO: json with switch IDs
-	console.log("switch update: "+id+"="+state);
+	console.log("switch update: "+switch_id+"="+state);
 	//spawn('sh', ['system_calls/switch_controll.sh', switch_id, state]);
 
 	// TEST SSE UPDATE
-	var data = {event_id : 1, event_data : {id : 1, state : state}};
+	var data = {"event_id" : 1, "event_data" : {"id" : switch_id, "state" : state}};
 	sse_update(data);
 });
 

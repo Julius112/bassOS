@@ -6,11 +6,7 @@ angular.module('bassOS').controller('switchCtl', function($scope, $rootScope, $h
 	$scope.switch_change = function(switch_obj) {
 		$http({
 			method : "POST",
-			data: 
-				{
-					id : switch_obj.id,
-					state : switch_obj.state
-				},
+			data: JSON.stringify({"id" : switch_obj.id, "state" : switch_obj.state}),
 			url : "/switch",
 		});
 	};
