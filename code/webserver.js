@@ -51,7 +51,7 @@ app.get('/stats', function(req, res) {
 });
 
 function sse_update(data) {
-	console.log("SSE UPDATE: "+data.id);
+	console.log("SSE UPDATE: "+data.event_id+" Data: "+"Switch="+data.event_data.id);
 	id++;
 	/* TODO: handle integer overflow -> probably combination of date.getMilliseconds() and counter */
 	openConnections.forEach(function(resp) {
@@ -60,13 +60,16 @@ function sse_update(data) {
 	});
 }
 
-app.post('/switch', function (req, res) {
+app.put('/switch', function (req, res) {
 	var switch_id = req.body.switch_id;
 	var state = req.body.state;
 	
 	// TODO: json with switch IDs
 	console.log("switch update: "+switch_id+"="+state);
 	//spawn('sh', ['system_calls/switch_controll.sh', switch_id, state]);
+
+	res.setHeader('content-type', 'application/json');
+	res.json(req.body);
 
 	// TEST SSE UPDATE
 	var data = {"event_id" : 1, "event_data" : {"id" : switch_id, "state" : state}};

@@ -1,3 +1,4 @@
+//ons.bootstrap('bassOS', ['sse', 'ng-touch']);
 ons.bootstrap('bassOS', ['sse']);
 angular.module('bassOS', ['onsen']);
 
@@ -10,11 +11,11 @@ angular.module('bassOS').controller("sseCtl", function($scope, $rootScope, $http
 	$scope.msg = {};
 	
 	var switch_event = function (event_data) {
-		console.log("SSE: "+event_data.id);
+		console.log("SSE: "+event_data.id+" state: "+event_data.state);
 		for (var i = 0; i < $rootScope.switch_array.length; i++) {
 			if($rootScope.switch_array[i].id == event_data.id)
             			$rootScope.$apply(function () {
-					$rootScope.switch_array[i] = event_data.state;
+					$rootScope.switch_array[i].state = event_data.state;
 				});
 		}
 	}
@@ -29,7 +30,7 @@ angular.module('bassOS').controller("sseCtl", function($scope, $rootScope, $http
 	
 	// handles the callback from the received event
 	var handleCallback = function (event_msg) {
-		var msg = JSON.parse(event_msg.data)	
+		var msg = JSON.parse(event_msg.data);
 		switch(msg.event_id) {
 			case events.switch_event.id:
 				switch_event(msg.event_data);
