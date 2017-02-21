@@ -10,7 +10,15 @@ angular.module('bassOS').controller('switchCtl', function($scope, $rootScope, $h
 			data: {"switch_id" : switch_obj.id, "state" : switch_obj.state},
 			url : "/switch"
 		});
-		}, 10);
+		}, 1);
 	};
 
-}); 
+}).directive('myTouchend', function() {
+	return function(scope, element, attr) {
+		element.on('touchend', function(event) {
+			scope.$apply(function() { 
+				scope.$eval(attr.myTouchend); 
+			});
+		});
+	};
+});; 

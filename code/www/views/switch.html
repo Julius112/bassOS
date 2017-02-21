@@ -10,7 +10,7 @@
 				{{ switch_array[0].name }}
 			</div>
 			<label class="right">
-				<ons-switch ng-click="switch_change(switch_array[0])" ng-model="switch_array[0].state"></ons-switch>
+				<ons-switch my-touchend="switch_change(switch_array[0])" ng-model="switch_array[0].state"></ons-switch>
 			</label>
 		</ons-list-item>
 		<ons-list-item>
@@ -21,7 +21,7 @@
 				{{ switch_array[1].name }}
 			</div>
 			<label class="right">
-				<ons-switch ng-click="switch_change(switch_array[1])" ng-model="switch_array[1].state"></ons-switch>
+				<ons-switch my-touchend="switch_change(switch_array[1])" ng-model="switch_array[1].state"></ons-switch>
 			</label>
 		</ons-list-item>
 	</ons-list>
