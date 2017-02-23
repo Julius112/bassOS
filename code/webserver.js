@@ -8,6 +8,9 @@ var spawn = require('child_process').spawn;
 var openConnections = [];
 var id = 1;
 
+/* switch */
+switch_array = [{"id":1, "state":false},{"id":2, "state":false}];
+
 /* Webserver Configuration */
 var app = express();
 var port = '3000';
@@ -66,14 +69,24 @@ app.put('/switch', function (req, res) {
 	
 	// TODO: json with switch IDs
 	console.log("switch update: "+switch_id+"="+state);
+	for (var i = 0; i < switch_array.length; i++)
+		if (switch_array[i].id == switch_id)
+			switch_array[i].state = state;
 	//spawn('sh', ['system_calls/switch_controll.sh', switch_id, state]);
 
 	res.setHeader('content-type', 'application/json');
-	res.json(req.body);
+	res.json(true);
 
-	// TEST SSE UPDATE
+	// SSE UPDATE
 	var data = {"event_id" : 1, "event_data" : {"id" : switch_id, "state" : state}};
 	sse_update(data);
+});
+
+app.get('/switch', function (req, res) {
+	//spawn('sh', ['system_calls/switch_controll.sh', switch_id, state]);
+
+	res.setHeader('content-type', 'application/json');
+	res.json(switch_array);
 });
 
 var server = http.createServer(app);
