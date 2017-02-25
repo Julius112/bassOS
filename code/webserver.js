@@ -63,6 +63,30 @@ function sse_update(data) {
 	});
 }
 
+function bluetooth_service_change(state) {
+	settings.bluetooth_service = state;
+	if( state == true)
+		console.log("start bluetooth service"+state);
+	else
+		console.log("stop bluetooth service"+state);
+}
+
+function bluetooth_pairable_change(state) {
+	settings.bluetooth_pairable = state;
+	if( state == true)
+		console.log("activate bluetooth pairable"+state);
+	else
+		console.log("deactivate bluetooth pairable"+state);
+}
+
+function airplay_service_change(state) {
+	settings.airplay_service = state;
+	if( state == true)
+		console.log("start airplay service"+state);
+	else
+		console.log("stop airplay service"+state);
+}
+
 app.put('/switch', function (req, res) {
 	var switch_id = req.body.switch_id;
 	var state = req.body.state;
@@ -76,13 +100,15 @@ app.put('/switch', function (req, res) {
 		}
 
 	//exec('/home/pi/bOS10/code/system_calls/switch_controll.sh -p '+switch_pin+' -s '+state);
+	/* action for switch not implemented jet 
 	if (state)
 		exec('echo "1" > sudo /sys/class/gpio/gpio'+switch_pin+'/value');
 	else
 		exec('echo "0" > sudo /sys/class/gpio/gpio'+switch_pin+'/value');
+	*/
 
 	res.setHeader('content-type', 'application/json');
-	res.json(true);
+	res.json();
 
 	// SSE UPDATE
 	var data = {"event_id" : 1, "event_data" : {"id" : switch_id, "state" : state}};
@@ -90,14 +116,25 @@ app.put('/switch', function (req, res) {
 });
 
 app.put('/settings', function (req, res) {
+	var data = {"event_id" : -1};
 	for ( key in req.body.settings_obj ) {
-		if(key == "bluetooth_service")
-			console.log("bluetooth_service");
-		else if(key == "bluetooth_pairable")
-			console.log("bluetooth_pairable");
-		else if(key == "airplay_service")
-			console.log("airplay");
+		if(key == "bluetooth_service") {
+			bluetooth_service_change(req.body.settings_obj.bluetooth_service.state);
+			data = {"event_id" : 2, "event_data" : {"bluetooth_service" : {"state" : req.body.settings_obj.bluetooth_service.state}}};
+		}
+		else if(key == "bluetooth_pairable") {
+			bluetooth_pairable_change(req.body.settings_obj.bluetooth_pairable.state);
+			data = {"event_id" : 2, "event_data" : {"bluetooth_pairable" : {"state" : req.body.settings_obj.bluetooth_pairable.state}}};
+		}
+		else if(key == "airplay_service") {
+			airplay_service_change(req.body.settings_obj.airplay_service.state);
+			data = {"event_id" : 2, "event_data" : {"airplay_service" : {"state" : req.body.settings_obj.airplay_service.state}}};
+		}
 	}
+	res.setHeader('content-type', 'application/json');
+	res.json();
+
+	sse_update(data);
 });
 
 app.get('/settings', function (req, res) {
@@ -114,8 +151,9 @@ app.get('/switch', function (req, res) {
 	res.json(switch_array);
 });
 	
+/* switch control not implemented jet
 for (var i = 0; i < switch_array.length; i++)
 	exec('echo "'+switch_array[i].pin+'" > /sys/class/gpio/export && echo "out" > sudo /sys/class/gpio/gpio'+switch_array[i].pin+'/direction && echo "0" > sudo /sys/class/gpio/gpio'+switch_array[i].pin+'/value');
-
+*/
 var server = http.createServer(app);
 server.listen(port);

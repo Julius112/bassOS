@@ -30,7 +30,7 @@ angular.module('bassOS').controller('settingsCtl', function($scope, $rootScope, 
 	$scope.reboot = function() {
 		$http({
 			method : "PUT",
-			data: {true},
+			data: {},
 			url : "/reboot"
 		});
 	};

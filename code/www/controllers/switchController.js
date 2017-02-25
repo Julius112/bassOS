@@ -3,7 +3,6 @@ angular.module('bassOS').controller('switchCtl', function($scope, $rootScope, $h
 	$rootScope.switch_array = [{"id":1, "name":"Unterboden", "state":false, "active":false, "icon_on":"ion-ios-lightbulb", "icon_off":"ion-ios-lightbulb-outline"},
 				{"id":2, "name":"Hupe", "state":false, "active":false, "icon_on":"ion-speakerphone", "icon_off":"ion-speakerphone"}];
 
-		console.log("get switch");
 		$http({
 			method : "GET",
 			url : "/switch"

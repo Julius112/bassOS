@@ -13,7 +13,7 @@
 			<span class="list__item__subtitle">Aktiviert</span>
 		</div>
 		<label class="right">
-			<ons-switch ng-model="settings.bluetooth_service.state" ng-click="settings_change({'bluetooth_service':settings.bluetooth_service})" ng-disabled="!settings.bluetooth_service.active"></ons-switch>
+			<ons-switch ng-model="settings.bluetooth_service.state" my-touchend="settings_change({'bluetooth_service':settings.bluetooth_service})" ng-disabled="!settings.bluetooth_service.active"></ons-switch>
 		</label>
 	</ons-list-item>
 	<ons-list-item>
@@ -25,7 +25,7 @@
 			<span class="list__item__subtitle">Koppeln</span>
 		</div>
 		<label class="right">
-			<ons-switch ng-model="settings.bluetooth_pairable.state" ng-click="settings_change({'bluetooth_pairable':settings.bluetooth_pairable})" ng-disabled="!settings.bluetooth_pairable.active"></ons-switch>
+			<ons-switch ng-model="settings.bluetooth_pairable.state" my-touchend="settings_change({'bluetooth_pairable':settings.bluetooth_pairable})" ng-disabled="!settings.bluetooth_pairable.active"></ons-switch>
 		</label>
 	</ons-list-item>
 	<ons-list-item>
@@ -36,7 +36,7 @@
 			Airplay
 		</div>
 		<label class="right">
-			<ons-switch ng-model="settings.airplay_service.state" ng-click="settings_change({'airplay_service':settings.airplay_service})" ng-disabled="!settings.airplay_service.active"></ons-switch>
+			<ons-switch ng-model="settings.airplay_service.state" my-touchend="settings_change({'airplay_service':settings.airplay_service})" ng-disabled="!settings.airplay_service.active"></ons-switch>
 		</label>
 	</ons-list-item>
 </ons-list>

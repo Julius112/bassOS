@@ -7,9 +7,6 @@ angular.module('bassOS').controller("sseCtl", function($scope, $rootScope, $http
 	//TODO: as external JSON
 	var events = {"switch_event" : {"id" : 1}, "settings_event" : {"id" : 2}, "playlist_event" : {"id" : 3}};
 	
-	// the last received msg
-	$scope.msg = {};
-	
 	var switch_event = function (event_data) {
 		console.log("SSE: "+event_data.id+" state: "+event_data.state);
 		for (var i = 0; i < $rootScope.switch_array.length; i++) {
@@ -18,15 +15,20 @@ angular.module('bassOS').controller("sseCtl", function($scope, $rootScope, $http
 					$rootScope.switch_array[i].state = event_data.state;
 				});
 		}
-	}
+	};
 	
-	this.playlist_event = function (event_data) {
+	var settings_event = function (event_data) {
+		for ( key in event_data ) {
+			console.log("SSE :"+key);
+			$rootScope.$apply(function () {
+				$rootScope.settings[key].state = event_data[key].state;
+			});
+		}
+	};
 	
-	}
-	
-	this.settings_event = function (event_data) {
-	
-	}
+	var playlist_event = function (event_data) {
+		
+	};
 	
 	// handles the callback from the received event
 	var handleCallback = function (event_msg) {
@@ -36,10 +38,10 @@ angular.module('bassOS').controller("sseCtl", function($scope, $rootScope, $http
 				switch_event(msg.event_data);
 				break;
 			case events.settings_event.id:
-				this.settings_event(msg.event_data);
+				settings_event(msg.event_data);
 				break;
 			case events.playlist_event.id:
-	                        this.playlist_event(msg.event_data);
+	                        playlist_event(msg.event_data);
 	                        break;
 		}
 	}
