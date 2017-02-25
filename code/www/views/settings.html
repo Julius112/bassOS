@@ -9,10 +9,11 @@
 			<ons-icon icon="ion-bluetooth" class="list__item__icon"></ons-icon>
 		</div>
 		<div class="center">
-			Bluetooth
+			<span class="list__item__title">Bluetooth</span>
+			<span class="list__item__subtitle">Aktiviert</span>
 		</div>
 		<label class="right">
-			<ons-switch ng-model="bluetooth_service"></ons-switch>
+			<ons-switch ng-model="settings.bluetooth_service.state" ng-click="settings_change({'bluetooth_service':settings.bluetooth_service})" ng-disabled="!settings.bluetooth_service.active"></ons-switch>
 		</label>
 	</ons-list-item>
 	<ons-list-item>
@@ -21,10 +22,10 @@
 		</div>
 		<div class="center">
 			<span class="list__item__title">Bluetooth</span>
-			<span class="list__item__subtitle">Kopplung</span>
+			<span class="list__item__subtitle">Koppeln</span>
 		</div>
 		<label class="right">
-			<ons-button ng-disabled="!bluetooth_service">Koppeln</ons-button>
+			<ons-switch ng-model="settings.bluetooth_pairable.state" ng-click="settings_change({'bluetooth_pairable':settings.bluetooth_pairable})" ng-disabled="!settings.bluetooth_pairable.active"></ons-switch>
 		</label>
 	</ons-list-item>
 	<ons-list-item>
@@ -35,7 +36,7 @@
 			Airplay
 		</div>
 		<label class="right">
-			<ons-switch ng-model="airplay_service"></ons-switch>
+			<ons-switch ng-model="settings.airplay_service.state" ng-click="settings_change({'airplay_service':settings.airplay_service})" ng-disabled="!settings.airplay_service.active"></ons-switch>
 		</label>
 	</ons-list-item>
 </ons-list>
@@ -48,7 +49,7 @@
 			Neustart
 		</div>
 		<label class="right">
-			<ons-button>Neustart</ons-button>
+			<ons-button ng-click="reboot()">Neustart</ons-button>
 		</label>
 	</ons-list-item>
 </ons-list>
