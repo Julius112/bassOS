@@ -66,25 +66,25 @@ function sse_update(data) {
 function bluetooth_service_change(state) {
 	settings.bluetooth_service = state;
 	if( state == true)
-		console.log("start bluetooth service"+state);
+		exec('pulseaudio -D');
 	else
-		console.log("stop bluetooth service"+state);
+		exec('pulseaudio -k');
 }
 
 function bluetooth_pairable_change(state) {
 	settings.bluetooth_pairable = state;
 	if( state == true)
-		console.log("activate bluetooth pairable"+state);
+		exec('/home/pi/bOS10/code/system_calls/pair.py');
 	else
-		console.log("deactivate bluetooth pairable"+state);
+		exec('/home/pi/bOS10/code/system_calls/pair-stop.sh');
 }
 
 function airplay_service_change(state) {
 	settings.airplay_service = state;
 	if( state == true)
-		console.log("start airplay service"+state);
+		exec('sudo systemctl start shairport-sync >> /tmp/air.txt');
 	else
-		console.log("stop airplay service"+state);
+		exec('sudo systemctl stop shairport-sync >> /tmp/air.txt');
 }
 
 app.put('/switch', function (req, res) {
@@ -115,6 +115,12 @@ app.put('/switch', function (req, res) {
 	sse_update(data);
 });
 
+app.put('/reboot', function (req, res) {
+	exec('sudo halt');
+	res.setHeader('content-type', 'application/json');
+	res.json();
+});
+
 app.put('/settings', function (req, res) {
 	var data = {"event_id" : -1};
 	for ( key in req.body.settings_obj ) {
@@ -134,6 +140,16 @@ app.put('/settings', function (req, res) {
 	res.setHeader('content-type', 'application/json');
 	res.json();
 
+	sse_update(data);
+});
+
+app.get('/paired', function (req, res) {
+	settings.bluetooth_pairable = state;
+	exec('/home/pi/bOS10/code/system_calls/pair-stop.sh');
+
+	res.setHeader('content-type', 'application/json');
+	res.json();
+	var data = {"event_id" : 2, "event_data" : {"bluetooth_pairable" : {"state" : false}}};
 	sse_update(data);
 });
 
