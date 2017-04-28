@@ -1,0 +1,42 @@
+---
+
+- name: Install Bluetooth Packages
+  apt: name={{item}} state=latest update_cache=yes
+  update_cache: yes
+  with_items:
+   - git 
+   - bluez 
+   - python
+   - python-gobject
+   - python-cffi
+   - python-dbus
+   - python-alsaaudio
+   - python-configparser
+   - sound-theme-freedesktop
+   - vorbis-tools
+
+- name: Create btspeaker Group
+  group:
+    name: btspeaker
+    system: yes
+    state: present
+
+- name: Add btspeaker User
+  user:
+    name: btspeaker
+    group: btspeaker
+    groups: audio,btspeaker #TODO check if btspeaker required in grouplist as it's already in prim group
+    system: yes
+    create_home: no
+    shell: /usr/bin/nologin
+
+- name: Download bt-speaker to /opt
+  git:
+    repo: 'https://github.com/lukasjapan/bt-speaker.git'
+    dest: /opt
+
+- name: Enable bt-speaker Service
+  systemd:
+    name: /opt/bt-speaker/bt_speaker.service #Check if that works
+    enabled: yes
+    state: started

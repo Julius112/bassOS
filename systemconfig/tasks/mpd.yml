@@ -1,0 +1,23 @@
+---
+
+- name: install bluetooth packages
+  apt: name={{item}} state=latest update_cache=yes
+  update_cache: yes
+  with_items:
+    - mpd
+    - mpc
+
+- name: Create mpd Group
+  group:
+    name: mpd
+    system: yes
+    state: present
+
+- name: Add mpd User
+  user:
+    name: mpd
+    group: mpd
+    groups: audio,mpd
+    system: yes
+    create_home: no
+    shell: /usr/bin/nologin

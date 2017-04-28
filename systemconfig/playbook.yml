@@ -1,0 +1,9 @@
+---
+- hosts: *
+  become: yes
+
+  tasks:
+
+    - include: tasks/bluetooth.yml
+
+    - include: tasks/airplay.yml

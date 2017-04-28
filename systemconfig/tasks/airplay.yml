@@ -1,0 +1,59 @@
+---
+
+- name: install bluetooth packages
+  apt: name={{item}} state=latest update_cache=yes
+  update_cache: yes
+  with_items:
+    - build-essential
+    - git
+    - xmltoman
+    - autoconf
+    - automake
+    - libtool
+    - libdaemon-dev
+    - libasound2-dev
+    - libpopt-dev
+    - libconfig-dev
+    - avahi-daemon
+    - libavahi-client-dev
+    - libssl-dev
+
+- name: Create Shairport Group
+  group:
+    name: shairport-sync
+    system: yes
+    state: present
+
+- name: Add Shairport User
+  user:
+    name: shairport-sync
+    group: shairport-sync
+    groups: audio,shairport-sync
+    system: yes
+    create_home: no
+    shell: /usr/bin/nologin
+
+- name: Download Shairport-sync to /opt
+  git:
+    repo: 'https://github.com/mikebrady/shairport-sync.git'
+    dest: /opt
+
+- name: Run Autoreconf tool
+  shell: "cd /opt/shairport-sync && autoreconf -i -f"
+
+- name: Run Configure tool
+  command: "/opt/shairport-sync/configure --with-alsa --with-avahi --with-ssl=openssl --with-metadata --with-systemd"
+
+- name: Build Shairport-sync from Source
+  shell: "cd /opt/shairport-sync && make"
+
+- name: Install Shairport-sync
+  shell: "cd /opt/shairport-sync && make install"
+
+- name: Enable Shairport-sync Service
+  systemd:
+    name: shairport-sync
+    enabled: yes
+    state: started
+
+## TODO: edit service for start playback script
