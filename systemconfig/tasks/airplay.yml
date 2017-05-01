@@ -1,8 +1,7 @@
 ---
 
-- name: install bluetooth packages
+- name: Install Shairport Packages
   apt: name={{item}} state=latest update_cache=yes
-  update_cache: yes
   with_items:
     - build-essential
     - git
@@ -30,25 +29,32 @@
     group: shairport-sync
     groups: audio,shairport-sync
     system: yes
-    create_home: no
+    createhome: no
     shell: /usr/bin/nologin
 
 - name: Download Shairport-sync to /opt
   git:
     repo: 'https://github.com/mikebrady/shairport-sync.git'
-    dest: /opt
+    dest: /opt/shairport-sync
 
 - name: Run Autoreconf tool
-  shell: "cd /opt/shairport-sync && autoreconf -i -f"
+  shell: "autoreconf -i -f"
+  args:
+    chdir: /opt/shairport-sync
 
 - name: Run Configure tool
-  command: "/opt/shairport-sync/configure --with-alsa --with-avahi --with-ssl=openssl --with-metadata --with-systemd"
+  shell: "./configure --with-alsa --with-avahi --with-ssl=openssl --with-metadata --with-systemd"
+  args:
+    chdir: /opt/shairport-sync
 
 - name: Build Shairport-sync from Source
-  shell: "cd /opt/shairport-sync && make"
+  make:
+    chdir: /opt/shairport-sync
 
 - name: Install Shairport-sync
-  shell: "cd /opt/shairport-sync && make install"
+  make:
+    target: install
+    chdir: /opt/shairport-sync
 
 - name: Enable Shairport-sync Service
   systemd:

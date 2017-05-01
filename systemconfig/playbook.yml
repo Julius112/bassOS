@@ -1,7 +1,6 @@
 ---
-- hosts: *
+- hosts: raspberry
   become: yes
-
   tasks:
 
     - include: tasks/bluetooth.yml
