@@ -1,0 +1,11 @@
+[Unit]
+Description="Simple Watchdog for mpd Play Events"
+
+[Service]
+TimeoutStartSec=0
+ExecStart=/opt/mpd-watchdog.sh
+Restart=always
+User=mpd
+
+[Install]
+WantedBy=multi-user.target

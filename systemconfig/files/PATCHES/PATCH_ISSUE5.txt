@@ -1,0 +1,47 @@
+From 079e509a290caf9ed21242891e9254de135bec20 Mon Sep 17 00:00:00 2001
+From: Julius Niedworok <julius.n@gmx.net>
+Date: Sat, 6 May 2017 20:11:20 +0000
+Subject: [PATCH 1/1] Issue5: Configurable option for ALSA cardindex
+
+Signed-off-by: Julius Niedworok <julius.n@gmx.net>
+---
+ README.md     | 1 +
+ bt_speaker.py | 5 +++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index 5b96447..d68b156 100755
+--- a/README.md
++++ b/README.md
+@@ -40,6 +40,7 @@ bt_speaker | connect_command | ogg123 /usr/share/sounds/freedesktop/stereo/servi
+ bt_speaker | disconnect_command | ogg123 /usr/share/sounds/freedesktop/stereo/service-logout.oga | Command that is called when an audio device disconnects from BT-Speaker
+ bluez | device_path | /org/bluez/hci0 | The DBUS path where BT-Speaker can find the bluetooth device
+ alsa | mixer | PCM | The volume of this mixer will be set from AVRCP messages (Remote volume control)
++alsa | cardindex | 0 | The alsa cardindex for the soundcard
+ 
+ 
+ Example of `/etc/bt_speaker/config.ini`:
+diff --git a/bt_speaker.py b/bt_speaker.py
+index 9c450cf..f6759ae 100755
+--- a/bt_speaker.py
++++ b/bt_speaker.py
+@@ -32,6 +32,7 @@ device_path = /org/bluez/hci0
+ 
+ [alsa]
+ mixer = PCM
++cardindex = 0
+ '''
+ 
+ config = configparser.SafeConfigParser()
+@@ -48,7 +49,7 @@ class PipedSBCAudioSinkWithAlsaVolumeControl(SBCAudioSink):
+         # Start process
+         self.process = subprocess.Popen(command, shell=True, bufsize=buf_size, stdin=subprocess.PIPE)
+         # Hook into alsa service for volume control
+-        self.alsamixer = alsaaudio.Mixer(control=alsa_control)
++        self.alsamixer = alsaaudio.Mixer(control=alsa_control, cardindex=int(config.get('alsa', 'cardindex')))
+     
+     def raw_audio(self, data):
+         # pipe to the play command
+-- 
+2.1.4
+

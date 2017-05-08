@@ -36,6 +36,7 @@
   git:
     repo: 'https://github.com/mikebrady/shairport-sync.git'
     dest: /opt/shairport-sync
+    force: yes
 
 - name: Run Autoreconf tool
   shell: "autoreconf -i -f"
@@ -55,6 +56,26 @@
   make:
     target: install
     chdir: /opt/shairport-sync
+
+- name: Create the Config File
+  copy:
+  args:
+    src: files/shairport-sync.conf
+    dest: /usr/local/etc/shairport-sync.conf
+    owner: shairport-sync
+
+- name: Copy the Playback Start Event Script
+  copy:
+  args:
+    src: files/airplay-start.sh
+    dest: /opt/airplay-start.sh
+    mode: 0511
+
+- name: Set the Playback Start Event Script
+  lineinfile:
+    dest: /lib/systemd/system/shairport-sync.service
+    regexp: '^ExecStart=/usr/local/bin/shairport-sync'
+    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-start.sh'
 
 - name: Enable Shairport-sync Service
   systemd:
