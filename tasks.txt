@@ -1,0 +1,55 @@
+- raspi config
+
+SYSTEM CONFIG:
+- hostname
+- wifi hotspot
+
+
+
+BLUETOOTH:
+#!/bin/bash
+set -e
+
+# This script has been tested with the "2017-01-11-raspbian-jessie-lite.img" image.
+
+# Install dependencies
+apt-get update
+apt-get install git bluez python python-gobject python-cffi python-dbus python-alsaaudio python-configparser sound-theme-freedesktop vorbis-tools
+
+# Add btspeaker user if not exist already
+id -u btspeaker &>/dev/null || useradd btspeaker -G audio
+
+# Download bt-speaker to /opt
+cd /opt
+git clone https://github.com/lukasjapan/bt-speaker.git
+
+# Install and start bt-speaker daemon
+systemctl enable /opt/bt-speaker/bt_speaker.service
+systemctl start bt_speaker
+
+
+AIRPLAY:
+apt-get install build-essential git xmltoman autoconf automake libtool libdaemon-dev libasound2-dev libpopt-dev libconfig-dev avahi-daemon libavahi-client-dev libssl-dev
+getent group shairport-sync &>/dev/null || sudo groupadd -r shairport-sync >/dev/null
+getent passwd shairport-sync &> /dev/null || sudo useradd -r -M -g shairport-sync -s /usr/bin/nologin -G audio shairport-sync >/dev/null
+cd /opt
+git clone https://github.com/mikebrady/shairport-sync.git
+cd shairport-sync
+autoreconf -i -f
+./configure --with-alsa --with-avahi --with-ssl=openssl --with-metadata --with-systemd
+make
+sudo make install
+sudo systemctl enable shairport-sync
+
+- edit systemd service to include the start playback script
+
+
+MPD:
+
+apt-get install mpd mpc
+getent group mpd &>/dev/null || sudo groupadd -r mpd >/dev/null
+getent passwd mpd &> /dev/null || sudo useradd -r -M -g mpd -s /usr/bin/nologin -G audio mpd >/dev/null
+- edit mpd config
+- 
+
+https://askubuntu.com/questions/253925/how-to-safely-abort-apt-get-install

@@ -1,0 +1,86 @@
+---
+
+- name: Install Shairport Packages
+  apt: name={{item}} state=latest update_cache=yes
+  with_items:
+    - build-essential
+    - git
+    - xmltoman
+    - autoconf
+    - automake
+    - libtool
+    - libdaemon-dev
+    - libasound2-dev
+    - libpopt-dev
+    - libconfig-dev
+    - avahi-daemon
+    - libavahi-client-dev
+    - libssl-dev
+
+- name: Create Shairport Group
+  group:
+    name: shairport-sync
+    system: yes
+    state: present
+
+- name: Add Shairport User
+  user:
+    name: shairport-sync
+    group: shairport-sync
+    groups: audio,shairport-sync
+    system: yes
+    createhome: no
+    shell: /usr/bin/nologin
+
+- name: Download Shairport-sync to /opt
+  git:
+    repo: 'https://github.com/mikebrady/shairport-sync.git'
+    dest: /opt/shairport-sync
+    force: yes
+
+- name: Run Autoreconf tool
+  shell: "autoreconf -i -f"
+  args:
+    chdir: /opt/shairport-sync
+
+- name: Run Configure tool
+  shell: "./configure --with-alsa --with-avahi --with-ssl=openssl --with-metadata --with-systemd"
+  args:
+    chdir: /opt/shairport-sync
+
+- name: Build Shairport-sync from Source
+  make:
+    chdir: /opt/shairport-sync
+
+- name: Install Shairport-sync
+  make:
+    target: install
+    chdir: /opt/shairport-sync
+
+- name: Create the Config File
+  copy:
+  args:
+    src: files/shairport-sync.conf
+    dest: /usr/local/etc/shairport-sync.conf
+    owner: shairport-sync
+
+- name: Copy the Playback Start Event Script
+  copy:
+  args:
+    src: files/airplay-start.sh
+    dest: /opt/airplay-start.sh
+    mode: 0511
+
+- name: Set the Playback Start Event Script
+  lineinfile:
+    dest: /lib/systemd/system/shairport-sync.service
+    regexp: '^ExecStart=/usr/local/bin/shairport-sync'
+    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-start.sh'
+
+- name: Enable Shairport-sync Service
+  systemd:
+    name: shairport-sync
+    enabled: yes
+    state: started
+
+## TODO: edit service for start playback script

@@ -1,0 +1,39 @@
+---
+
+- name: Create mpd Group
+  group:
+    name: app
+    system: yes
+    state: present
+
+- name: Add mpd User
+  user:
+    name: app
+    group: app
+    system: yes
+    createhome: no
+    shell: /usr/bin/nologin
+
+- name: Install npm
+  apt: name={{item}} state=latest update_cache=yes
+  with_items:
+    - npm
+
+- name: Download Bass-OS Repository
+  git:
+    repo: 'https://github.com/lukasjapan/bt-speaker.git'
+    dest: /opt/bOS10
+    force: yes
+
+- name: Install the Bass-OS Service
+  copy:
+    src: /opt/bOS10/code/bass-os.service
+    dest: /lib/systemd/system/bass-os.service
+    mode: 0644
+    remote_src: yes
+
+- name: Enable Bass-OS Service
+  systemd:
+    name: bass-os
+    enabled: yes
+    state: started

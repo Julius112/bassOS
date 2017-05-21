@@ -1,0 +1,42 @@
+---
+
+- name: Create mpd Group
+  group:
+    name: mpd
+    system: yes
+    state: present
+
+- name: Add mpd User
+  user:
+    name: mpd
+    group: mpd
+    groups: audio,mpd
+    system: yes
+    createhome: no
+    shell: /usr/bin/nologin
+
+- name: Install mpd and mpc packages
+  apt: name={{item}} state=latest update_cache=yes
+  with_items:
+    - mpd
+    - mpc
+
+- name: Copy the mpd Watchdog Script
+  copy:
+  args:
+    src: files/mpd-watchdog.sh
+    dest: /opt/mpd-watchdog.sh
+    mode: 0511
+
+- name: Copy the mpd Watchdog Script
+  copy:
+  args:
+    src: files/mpd-watchdog.service
+    dest: /lib/systemd/system/mpd-watchdog.service
+    mode: 644
+
+#- name: Set the Playback Start Event Script
+#  lineinfile:
+#    path: /lib/systemd/system/shairport-sync.service
+#    regexp: '^ExecStart=/usr/local/bin/shairport-sync'
+#    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-start.sh'

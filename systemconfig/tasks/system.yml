@@ -1,0 +1,15 @@
+---
+
+- name: Set Default Output to USB Soundcard
+  lineinfile:
+    dest: /usr/share/alsa/alsa.conf
+    regexp: '^defaults.ctl.card'
+    line: 'defaults.ctl.card 1'
+  notify: Reload ALSA
+
+- name: Set Default PCM to USB Soundcard
+  lineinfile:
+    dest: /usr/share/alsa/alsa.conf
+    regexp: '^defaults.pcm.card'
+    line: 'defaults.pcm.card 1'
+  notify: Reload ALSA
