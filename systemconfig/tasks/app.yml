@@ -1,27 +1,32 @@
 ---
 
-- name: Create mpd Group
-  group:
-    name: app
-    system: yes
-    state: present
-
-- name: Add mpd User
-  user:
-    name: app
-    group: app
-    system: yes
-    createhome: no
-    shell: /usr/bin/nologin
-
-- name: Install npm
-  apt: name={{item}} state=latest update_cache=yes
-  with_items:
-    - npm
+#- name: Create app Group
+#  group:
+#    name: app
+#    system: yes
+#    state: present
+#
+#- name: Add app User
+#  user:
+#    name: app
+#    group: app
+#    system: yes
+#    createhome: no
+#    shell: /usr/bin/nologin
+#
+#- name: Install npm
+#  apt: name={{item}} state=latest update_cache=yes
+#  with_items:
+#    - npm
+#
+#- name: Install required npm packages
+#  shell: "npm install {{ item }}"
+#  with_items:
+#    - "express"
 
 - name: Download Bass-OS Repository
   git:
-    repo: 'https://github.com/lukasjapan/bt-speaker.git'
+    repo: 'https://github.com/Julius112/bOS10.git'
     dest: /opt/bOS10
     force: yes
 

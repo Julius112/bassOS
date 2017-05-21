@@ -40,3 +40,4 @@
 #    path: /lib/systemd/system/shairport-sync.service
 #    regexp: '^ExecStart=/usr/local/bin/shairport-sync'
 #    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-start.sh'
+#TODO mpd config file

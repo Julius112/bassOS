@@ -31,7 +31,7 @@
 
 - name: Download bt-speaker to /opt
   git:
-    repo: 'https://github.com/lukasjapan/bt-speaker.git'
+    repo: 'https://github.com/Julius112/bt-speaker.git'
     dest: /opt/bt-speaker
     force: yes
 

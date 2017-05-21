@@ -10,7 +10,8 @@ var id = 1;
 
 /* switch */
 var switch_array = [{"id":1, "pin":17, "state":false},{"id":2, "pin":16, "state":false}];
-var settings = {"bluetooth_service" : false, "bluetooth_pairable" : false, "airplay_service" : false}; 
+var settings = {"bluetooth_service" : false, "bluetooth_pairable" : false, "mpd" : "true", "airplay_service" : false, "auto_source" : false}; 
+var services = [{"name": "bluetooth_service", "state": "stopped", "start": "systemctl start bt_speaker", "stop": "systemctl stop bt_speaker", "playback-stop": "systemctl restart bt_speaker"}, {"name": "airplay_service", "state": "stopped", "start": "systemctl start shairport-sync", "stop": "systemctl stop shairport-sync", "playback-stop": "systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "systemctl start mpd", "stop": "systemctl stop mpd", "playback-stop": "mpc pause"}];
 
 /* Webserver Configuration */
 var app = express();
@@ -63,28 +64,107 @@ function sse_update(data) {
 	});
 }
 
-function bluetooth_service_change(state) {
-	settings.bluetooth_service = state;
-	if( state == true)
-		exec('pulseaudio -D');
-	else
-		exec('pulseaudio -k');
-}
-
 function bluetooth_pairable_change(state) {
 	settings.bluetooth_pairable = state;
-	if( state == true)
-		exec('/home/pi/bOS10/code/system_calls/pair.py');
-	else
-		exec('/home/pi/bOS10/code/system_calls/pair-stop.sh');
+	//if( state == true)
+	//	exec('/home/pi/bOS10/code/system_calls/pair.py');
+	//else
+	//	exec('/home/pi/bOS10/code/system_calls/pair-stop.sh');
 }
 
-function airplay_service_change(state) {
+function service_change(id, state) {
 	settings.airplay_service = state;
-	if( state == true)
-		exec('sudo systemctl start shairport-sync >> /tmp/air.txt');
-	else
-		exec('sudo systemctl stop shairport-sync >> /tmp/air.txt');
+	if( state ) {
+		if (settings.auto_source) {
+			services[id].state = "active";
+			exec('sudo '+services[id].start);
+		}
+		else {
+			var service_playing = 0;
+                        for (var i = 0; i < services.lenght; i++) {
+                                if (services[i].state === "playing") {
+                                        service_playing++;
+                                }
+                        }
+			if(service_playing === 0) {
+				services[id].state = "active";
+				exec('sudo '+services[id].start);
+			}
+		}
+	}
+	else {
+		if (services[id].state === "playing")
+			source_change(id);
+		services[id].state = "stopped";
+		exec('sudo '+services[id].stop);
+	}
+}
+
+function auto_source_change(state) {
+	settings.auto_source = state;
+	source_change(-1);
+}
+
+function source_change(id) {
+	if (id < 0) {
+		if (settings.auto_source)
+			for (var i = 0; i < services.lenght; i++)
+			{
+				for ( key in settings ) {
+					if (key === services[i].name) {
+						if (settings[key]) {
+							if (services[i].state === "stopped") {
+								services[i].state = "active";
+								exec('sudo '+services[i].start);
+							}
+						}
+					}
+				}
+			}
+		else {
+			var service_playing = 0;
+			for (var i = 0; i < services.lenght; i++) {
+				if (services[i].state === "playing") {
+					service_playing++;
+				}
+			}
+			if (service_playing > 0) {
+				for (var i = 0; i < services.lenght; i++)
+                        	{       
+                        	        if (services[i].state === "active") {
+                        	                services[i].state = "stopped";
+						exec('sudo '+services[i].stop);
+                        	        }
+                        	}
+			}
+		}
+	}
+	else {
+		if (services[id].state === "playing") {
+			for ( key in settings ) {
+				if (settings[key])
+					services[i].state = "active";
+			}
+		}
+		else {
+			if (settings.auto_source) {
+                        	for (var i = 0; i < services.lenght; i++) {
+                        	        if (services[i].state === "playing") {
+						services[i].state = "active";
+						exec('sudo '+services[i].playback_stop);
+                        	        }
+                        	}
+			}
+			else {
+				for (var i = 0; i < services.lenght; i++) {
+					if (i === id)
+						continue;
+					services[i].state = "stopped";
+					exec('sudo '+services[i].stop);
+				}
+			}
+		}
+	}
 }
 
 app.put('/switch', function (req, res) {
@@ -121,11 +201,19 @@ app.put('/reboot', function (req, res) {
 	res.json();
 });
 
+app.put('/playback', function (req, res) {
+	console.log("service: "+req.body.service);
+	console.log("state: "+req.body.state);
+	
+	res.setHeader('content-type', 'application/json');
+	res.json();
+}
+
 app.put('/settings', function (req, res) {
 	var data = {"event_id" : -1};
 	for ( key in req.body.settings_obj ) {
 		if(key == "bluetooth_service") {
-			bluetooth_service_change(req.body.settings_obj.bluetooth_service.state);
+			service_change(0, req.body.settings_obj.bluetooth_service.state);
 			data = {"event_id" : 2, "event_data" : {"bluetooth_service" : {"state" : req.body.settings_obj.bluetooth_service.state}}};
 		}
 		else if(key == "bluetooth_pairable") {
@@ -133,8 +221,13 @@ app.put('/settings', function (req, res) {
 			data = {"event_id" : 2, "event_data" : {"bluetooth_pairable" : {"state" : req.body.settings_obj.bluetooth_pairable.state}}};
 		}
 		else if(key == "airplay_service") {
-			airplay_service_change(req.body.settings_obj.airplay_service.state);
+			service_change(0, req.body.settings_obj.airplay_service.state);
 			data = {"event_id" : 2, "event_data" : {"airplay_service" : {"state" : req.body.settings_obj.airplay_service.state}}};
+		}
+		//TODO: mpd currently not controlled
+		else if(key == "auto_source") {
+			auto_source_change(req.body.settings_obj.auto_source.state);
+			data = {"event_id" : 2, "event_data" : {"auto_source" : {"state" : req.body.settings_obj.auto_source.state}}};
 		}
 	}
 	res.setHeader('content-type', 'application/json');
@@ -145,7 +238,7 @@ app.put('/settings', function (req, res) {
 
 app.get('/paired', function (req, res) {
 	settings.bluetooth_pairable = state;
-	exec('/home/pi/bOS10/code/system_calls/pair-stop.sh');
+	//exec('/home/pi/bOS10/code/system_calls/pair-stop.sh');
 
 	res.setHeader('content-type', 'application/json');
 	res.json();
@@ -154,15 +247,11 @@ app.get('/paired', function (req, res) {
 });
 
 app.get('/settings', function (req, res) {
-	//spawn('sh', ['system_calls/switch_controll.sh', switch_id, state]);
-
 	res.setHeader('content-type', 'application/json');
 	res.json(settings);
 });
 	
 app.get('/switch', function (req, res) {
-	//spawn('sh', ['system_calls/switch_controll.sh', switch_id, state]);
-
 	res.setHeader('content-type', 'application/json');
 	res.json(switch_array);
 });

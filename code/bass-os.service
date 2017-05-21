@@ -4,7 +4,7 @@ Description="Main Bass OS application"
 [Service]
 TimeoutStartSec=0
 WorkingDirectory=/opt/bOS10/code
-ExecStart=nodejs /opt/bOS10/code/webserver.js
+ExecStart=/usr/bin/nodejs /opt/bOS10/code/webserver.js
 Restart=always
 User=app
 
