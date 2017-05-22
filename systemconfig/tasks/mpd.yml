@@ -35,6 +35,12 @@
     dest: /lib/systemd/system/mpd-watchdog.service
     mode: 644
 
+- name: Disable mpd Service
+  systemd:
+    name: mpd
+    enabled: no
+    state: stopped
+
 #- name: Set the Playback Start Event Script
 #  lineinfile:
 #    path: /lib/systemd/system/shairport-sync.service

@@ -8,10 +8,9 @@ var exec = require('child_process').exec;
 var openConnections = [];
 var id = 1;
 
-/* switch */
 var switch_array = [{"id":1, "pin":17, "state":false},{"id":2, "pin":16, "state":false}];
 var settings = {"bluetooth_service" : false, "bluetooth_pairable" : false, "mpd" : "true", "airplay_service" : false, "auto_source" : false}; 
-var services = [{"name": "bluetooth_service", "state": "stopped", "start": "systemctl start bt_speaker", "stop": "systemctl stop bt_speaker", "playback-stop": "systemctl restart bt_speaker"}, {"name": "airplay_service", "state": "stopped", "start": "systemctl start shairport-sync", "stop": "systemctl stop shairport-sync", "playback-stop": "systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "systemctl start mpd", "stop": "systemctl stop mpd", "playback-stop": "mpc pause"}];
+var services = [{"name": "bluetooth", "state": "stopped", "start": "systemctl start bt_speaker", "stop": "systemctl stop bt_speaker", "playback-stop": "systemctl restart bt_speaker"}, {"name": "airplay", "state": "stopped", "start": "systemctl start shairport-sync", "stop": "systemctl stop shairport-sync", "playback-stop": "systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "systemctl start mpd", "stop": "systemctl stop mpd", "playback-stop": "mpc pause"}];
 
 /* Webserver Configuration */
 var app = express();
@@ -73,7 +72,11 @@ function bluetooth_pairable_change(state) {
 }
 
 function service_change(id, state) {
-	settings.airplay_service = state;
+	for ( key in settings ) {
+		if (key === services[i].name) {
+			settings[key] = state;
+		}
+	}
 	if( state ) {
 		if (settings.auto_source) {
 			services[id].state = "active";
@@ -202,12 +205,15 @@ app.put('/reboot', function (req, res) {
 });
 
 app.put('/playback', function (req, res) {
-	console.log("service: "+req.body.service);
-	console.log("state: "+req.body.state);
+	for (var i = 0; i < services.lenght; i++) {
+		if(services[i].name === req.body.service) {
+			source_change(i);
+		}
+	}
 	
 	res.setHeader('content-type', 'application/json');
 	res.json();
-}
+});
 
 app.put('/settings', function (req, res) {
 	var data = {"event_id" : -1};
@@ -255,6 +261,22 @@ app.get('/switch', function (req, res) {
 	res.setHeader('content-type', 'application/json');
 	res.json(switch_array);
 });
+
+function init() {
+	for (var i = 0; i < services.lenght; i++) {
+		for ( key in settings ) {
+			if (key === services[i].name) {
+				if (settings[key]) {
+					exec('sudo '+services[i].start);
+				else
+					exec('sudo '+services[i].stop);
+				}
+			}
+		}
+	}
+}
+
+init();
 	
 /* switch control not implemented jet
 for (var i = 0; i < switch_array.length; i++)

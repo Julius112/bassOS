@@ -6,9 +6,7 @@ while : ; do
 		while [[ $(mpc) == *paused* ]] ; do
 		        mpc idle >> /dev/null
 		done
-		#### Stop other audio sources ####
-		sudo service shairport-sync restart &
-		sudo service bt_speaker restart
+		curl -H 'Content-Type: application/json' -X PUT -d '{"service":"mpd"}' localhost:3000/playback
 		#echo stop
 	fi
 done

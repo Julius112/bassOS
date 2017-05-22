@@ -42,8 +42,8 @@
     mode: 0644
     remote_src: yes
 
-- name: Enable bt-speaker Service
+- name: Disable bt-speaker Service
   systemd:
     name: bt_speaker
-    enabled: yes
-    state: started
+    enabled: no
+    state: stopped

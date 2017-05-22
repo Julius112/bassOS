@@ -75,12 +75,12 @@
   lineinfile:
     dest: /lib/systemd/system/shairport-sync.service
     regexp: '^ExecStart=/usr/local/bin/shairport-sync'
-    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-start.sh'
+    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-playback.sh -E /opt/airplay-playback.sh'
 
-- name: Enable Shairport-sync Service
+- name: Disable Shairport-sync Service
   systemd:
     name: shairport-sync
-    enabled: yes
-    state: started
+    enabled: no
+    state: stopped
 
 ## TODO: edit service for start playback script

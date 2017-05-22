@@ -23,6 +23,7 @@
 #  shell: "npm install {{ item }}"
 #  with_items:
 #    - "express"
+#    - "body-parser"
 
 - name: Download Bass-OS Repository
   git:
