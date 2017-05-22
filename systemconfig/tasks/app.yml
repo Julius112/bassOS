@@ -1,29 +1,29 @@
 ---
 
-#- name: Create app Group
-#  group:
-#    name: app
-#    system: yes
-#    state: present
-#
-#- name: Add app User
-#  user:
-#    name: app
-#    group: app
-#    system: yes
-#    createhome: no
-#    shell: /usr/bin/nologin
-#
-#- name: Install npm
-#  apt: name={{item}} state=latest update_cache=yes
-#  with_items:
-#    - npm
-#
-#- name: Install required npm packages
-#  shell: "npm install {{ item }}"
-#  with_items:
-#    - "express"
-#    - "body-parser"
+- name: Create app Group
+  group:
+    name: app
+    system: yes
+    state: present
+
+- name: Add app User
+  user:
+    name: app
+    group: app
+    system: yes
+    createhome: no
+    shell: /usr/bin/nologin
+
+- name: Install npm
+  apt: name={{item}} state=latest update_cache=yes
+  with_items:
+    - npm
+
+- name: Install required npm packages
+  shell: "npm install {{ item }}"
+  with_items:
+    - "express"
+    - "body-parser"
 
 - name: Download Bass-OS Repository
   git:
