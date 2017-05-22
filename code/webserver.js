@@ -9,8 +9,8 @@ var openConnections = [];
 var id = 1;
 
 var switch_array = [{"id":1, "pin":17, "state":false},{"id":2, "pin":16, "state":false}];
-var settings = {"bluetooth_service" : false, "bluetooth_pairable" : false, "mpd" : "true", "airplay_service" : false, "auto_source" : false}; 
-var services = [{"name": "bluetooth", "state": "stopped", "start": "systemctl start bt_speaker", "stop": "systemctl stop bt_speaker", "playback-stop": "systemctl restart bt_speaker"}, {"name": "airplay", "state": "stopped", "start": "systemctl start shairport-sync", "stop": "systemctl stop shairport-sync", "playback-stop": "systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "systemctl start mpd", "stop": "systemctl stop mpd", "playback-stop": "mpc pause"}];
+var settings = {"bluetooth" : true, "bluetooth_pairable" : false, "mpd" : "true", "airplay" : true, "auto_source" : false}; 
+var services = [{"name": "bluetooth", "state": "stopped", "start": ["/bin/sh", "-c", "/bin/systemctl", "start", "bt_speaker"], "stop": ["/bin/sh", "-c", "/bin/systemctl", "stop", "bt_speaker"], "playback_stop": ["/bin/sh", "-c", "/bin/systemctl", "restart", "bt_speaker"]}, {"name": "airplay", "state": "stopped", "start": ["/bin/sh", "-c", "/bin/systemctl", "start", "shairport-sync"], "stop": ["/bin/sh", "-c", "/bin/systemctl", "stop", "shairport-sync"], "playback_stop": ["/bin/sh", "-c", "/bin/systemctl", "restart", "shairport-sync"]}, {"name": "mpd", "state": "stopped", "start": ["/bin/sh", "-c", "/bin/systemctl", "start", "mpd"], "stop": ["/bin/sh", "-c", "/bin/systemctl", "stop", "mpd"], "playback_stop": ["mpc", "pause"]}];
 
 /* Webserver Configuration */
 var app = express();
@@ -80,18 +80,18 @@ function service_change(id, state) {
 	if( state ) {
 		if (settings.auto_source) {
 			services[id].state = "active";
-			exec('sudo '+services[id].start);
+			exec(services[id].start);
 		}
 		else {
 			var service_playing = 0;
-                        for (var i = 0; i < services.lenght; i++) {
+                        for (var i = 0; i < services.length; i++) {
                                 if (services[i].state === "playing") {
                                         service_playing++;
                                 }
                         }
 			if(service_playing === 0) {
 				services[id].state = "active";
-				exec('sudo '+services[id].start);
+				exec(services[id].start);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ function service_change(id, state) {
 		if (services[id].state === "playing")
 			source_change(id);
 		services[id].state = "stopped";
-		exec('sudo '+services[id].stop);
+		exec(services[id].stop);
 	}
 }
 
@@ -109,16 +109,17 @@ function auto_source_change(state) {
 }
 
 function source_change(id) {
+	console.log("source_change: "+id);
 	if (id < 0) {
 		if (settings.auto_source)
-			for (var i = 0; i < services.lenght; i++)
+			for (var i = 0; i < services.length; i++)
 			{
 				for ( key in settings ) {
 					if (key === services[i].name) {
 						if (settings[key]) {
 							if (services[i].state === "stopped") {
 								services[i].state = "active";
-								exec('sudo '+services[i].start);
+								exec(services[i].start);
 							}
 						}
 					}
@@ -126,46 +127,74 @@ function source_change(id) {
 			}
 		else {
 			var service_playing = 0;
-			for (var i = 0; i < services.lenght; i++) {
+			for (var i = 0; i < services.length; i++) {
 				if (services[i].state === "playing") {
 					service_playing++;
 				}
 			}
 			if (service_playing > 0) {
-				for (var i = 0; i < services.lenght; i++)
+				for (var i = 0; i < services.length; i++)
                         	{       
                         	        if (services[i].state === "active") {
                         	                services[i].state = "stopped";
-						exec('sudo '+services[i].stop);
+						exec(services[i].stop);
                         	        }
                         	}
+			}
+			else {
+				for (var i = 0; i < services.length; i++)
+                                {
+					for ( key in settings ) {
+						if (key === services[i].name) {
+							if (settings[key]) {
+								services[i].state = "active";
+								exec(services[i].start);
+							}
+							else {
+								services[i].state = "stopped";
+								exec(services[i].stop);
+							}
+						}
+					}
+                                }
 			}
 		}
 	}
 	else {
 		if (services[id].state === "playing") {
-			for ( key in settings ) {
-				if (settings[key])
-					services[i].state = "active";
+			if (!settings.auto_source) {
+                       		for (var i = 0; i < services.length; i++) {
+					if (i === id)
+						continue;
+					for ( key in settings ) {
+						if (key === services[i].name) {
+							if (settings[key])
+								services[i].state = "active";
+								exec(services[i].start);
+						}
+					}
+				}
 			}
+			services[id].state = "active";
 		}
 		else {
 			if (settings.auto_source) {
-                        	for (var i = 0; i < services.lenght; i++) {
+                        	for (var i = 0; i < services.length; i++) {
                         	        if (services[i].state === "playing") {
 						services[i].state = "active";
-						exec('sudo '+services[i].playback_stop);
+						exec(services[i].playback_stop);
                         	        }
                         	}
 			}
 			else {
-				for (var i = 0; i < services.lenght; i++) {
+				for (var i = 0; i < services.length; i++) {
 					if (i === id)
 						continue;
 					services[i].state = "stopped";
-					exec('sudo '+services[i].stop);
+					exec(services[i].stop);
 				}
 			}
+			services[id].state = "playing";
 		}
 	}
 }
@@ -205,7 +234,7 @@ app.put('/reboot', function (req, res) {
 });
 
 app.put('/playback', function (req, res) {
-	for (var i = 0; i < services.lenght; i++) {
+	for (var i = 0; i < services.length; i++) {
 		if(services[i].name === req.body.service) {
 			source_change(i);
 		}
@@ -218,17 +247,17 @@ app.put('/playback', function (req, res) {
 app.put('/settings', function (req, res) {
 	var data = {"event_id" : -1};
 	for ( key in req.body.settings_obj ) {
-		if(key == "bluetooth_service") {
-			service_change(0, req.body.settings_obj.bluetooth_service.state);
-			data = {"event_id" : 2, "event_data" : {"bluetooth_service" : {"state" : req.body.settings_obj.bluetooth_service.state}}};
+		if(key == "bluetooth") {
+			service_change(0, req.body.settings_obj.bluetooth.state);
+			data = {"event_id" : 2, "event_data" : {"bluetooth" : {"state" : req.body.settings_obj.bluetooth.state}}};
 		}
 		else if(key == "bluetooth_pairable") {
 			bluetooth_pairable_change(req.body.settings_obj.bluetooth_pairable.state);
 			data = {"event_id" : 2, "event_data" : {"bluetooth_pairable" : {"state" : req.body.settings_obj.bluetooth_pairable.state}}};
 		}
-		else if(key == "airplay_service") {
-			service_change(0, req.body.settings_obj.airplay_service.state);
-			data = {"event_id" : 2, "event_data" : {"airplay_service" : {"state" : req.body.settings_obj.airplay_service.state}}};
+		else if(key == "airplay") {
+			service_change(0, req.body.settings_obj.airplay.state);
+			data = {"event_id" : 2, "event_data" : {"airplay" : {"state" : req.body.settings_obj.airplay.state}}};
 		}
 		//TODO: mpd currently not controlled
 		else if(key == "auto_source") {
@@ -262,25 +291,11 @@ app.get('/switch', function (req, res) {
 	res.json(switch_array);
 });
 
-function init() {
-	for (var i = 0; i < services.lenght; i++) {
-		for ( key in settings ) {
-			if (key === services[i].name) {
-				if (settings[key]) {
-					exec('sudo '+services[i].start);
-				else
-					exec('sudo '+services[i].stop);
-				}
-			}
-		}
-	}
-}
-
-init();
-	
 /* switch control not implemented jet
 for (var i = 0; i < switch_array.length; i++)
 	exec('echo "'+switch_array[i].pin+'" > /sys/class/gpio/export && echo "out" > sudo /sys/class/gpio/gpio'+switch_array[i].pin+'/direction && echo "0" > sudo /sys/class/gpio/gpio'+switch_array[i].pin+'/value');
 */
 var server = http.createServer(app);
-server.listen(port);
+server.listen(port, function () {
+  source_change(-1);
+});
