@@ -9,8 +9,8 @@ var openConnections = [];
 var id = 1;
 
 var switch_array = [{"id":1, "pin":17, "state":false},{"id":2, "pin":16, "state":false}];
-var settings = {"bluetooth" : true, "bluetooth_pairable" : false, "mpd" : "true", "airplay" : true, "auto_source" : false}; 
-var services = [{"name": "bluetooth", "state": "stopped", "start": "/bin/systemctl start bt_speaker", "stop": "/bin/systemctl stop bt_speaker", "playback_stop": "/bin/systemctl restart bt_speaker"}, {"name": "airplay", "state": "stopped", "start": "/bin/systemctl start shairport-sync", "stop": "/bin/systemctl stop shairport-sync", "playback_stop": "/bin/systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "/bin/systemctl start mpd", "stop": "/bin/systemctl stop mpd", "playback_stop": "mpc pause"}];
+var settings = {"bluetooth" : true, "bluetooth_pairable" : false, "mpd" : "true", "airplay" : true, "auto_source" : "true"}; 
+var services = [{"name": "bluetooth", "state": "stopped", "start": "sudo /bin/systemctl start bt_speaker", "stop": "sudo /bin/systemctl stop bt_speaker", "playback_stop": "sudo /bin/systemctl restart bt_speaker"}, {"name": "airplay", "state": "stopped", "start": "sudo /bin/systemctl start shairport-sync", "stop": "sudo /bin/systemctl stop shairport-sync", "playback_stop": "sudo /bin/systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "sudo /bin/systemctl start mpd", "stop": "sudo /bin/systemctl stop mpd", "playback_stop": "mpc pause"}];
 
 /* Webserver Configuration */
 var app = express();
