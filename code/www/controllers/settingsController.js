@@ -1,6 +1,6 @@
 angular.module('bassOS').controller('settingsCtl', function($scope, $rootScope, $http) {
 	//TODO: load list as external JSON
-	$rootScope.settings = {"bluetooth_service": {"state":false, "active":false}, "bluetooth_pairable":{"state":false, "active":false}, "airplay_service":{"state":false, "active":false}};
+	$rootScope.settings = {"bluetooth": {"state":false, "active":false}, "bluetooth_pairable":{"state":false, "active":false}, "airplay":{"state":false, "active":false}, "auto_source":{"state":false, "active":false}};
 
 	$http({
 		method : "GET",
@@ -25,6 +25,14 @@ angular.module('bassOS').controller('settingsCtl', function($scope, $rootScope, 
 				url : "/settings"
 			});
 		}, 1);
+	};
+
+	$scope.halt = function() {
+		$http({
+			method : "PUT",
+			data: {},
+			url : "/halt"
+		});
 	};
 
 	$scope.reboot = function() {

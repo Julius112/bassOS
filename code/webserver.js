@@ -8,6 +8,7 @@ var exec = require('child_process').exec;
 var openConnections = [];
 var id = 1;
 
+var startup = "sudo ogg123 /usr/share/sounds/freedesktop/stereo/service-login.oga"
 var switch_array = [{"id":1, "pin":17, "state":false},{"id":2, "pin":16, "state":false}];
 var settings = {"bluetooth" : true, "bluetooth_pairable" : false, "mpd" : "true", "airplay" : true, "auto_source" : "true"}; 
 var services = [{"name": "bluetooth", "state": "stopped", "start": "sudo /bin/systemctl start bt_speaker", "stop": "sudo /bin/systemctl stop bt_speaker", "playback_stop": "sudo /bin/systemctl restart bt_speaker"}, {"name": "airplay", "state": "stopped", "start": "sudo /bin/systemctl start shairport-sync", "stop": "sudo /bin/systemctl stop shairport-sync", "playback_stop": "sudo /bin/systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "sudo /bin/systemctl start mpd", "stop": "sudo /bin/systemctl stop mpd", "playback_stop": "mpc pause"}];
@@ -73,8 +74,9 @@ function bluetooth_pairable_change(state) {
 
 function service_change(id, state) {
 	for ( key in settings ) {
-		if (key === services[i].name) {
+		if (key === services[id].name) {
 			settings[key] = state;
+			console.log("Updated: "+key+": "+state);
 		}
 	}
 	if( state ) {
@@ -228,6 +230,12 @@ app.put('/switch', function (req, res) {
 });
 
 app.put('/reboot', function (req, res) {
+	exec('sudo reboot');
+	res.setHeader('content-type', 'application/json');
+	res.json();
+});
+
+app.put('/halt', function (req, res) {
 	exec('sudo halt');
 	res.setHeader('content-type', 'application/json');
 	res.json();
@@ -256,10 +264,13 @@ app.put('/settings', function (req, res) {
 			data = {"event_id" : 2, "event_data" : {"bluetooth_pairable" : {"state" : req.body.settings_obj.bluetooth_pairable.state}}};
 		}
 		else if(key == "airplay") {
-			service_change(0, req.body.settings_obj.airplay.state);
+			service_change(1, req.body.settings_obj.airplay.state);
 			data = {"event_id" : 2, "event_data" : {"airplay" : {"state" : req.body.settings_obj.airplay.state}}};
 		}
-		//TODO: mpd currently not controlled
+		else if(key == "mpd") {
+			service_change(2, req.body.settings_obj.mpd.state);
+			data = {"event_id" : 2, "event_data" : {"mpd" : {"state" : req.body.settings_obj.mpd.state}}};
+		}
 		else if(key == "auto_source") {
 			auto_source_change(req.body.settings_obj.auto_source.state);
 			data = {"event_id" : 2, "event_data" : {"auto_source" : {"state" : req.body.settings_obj.auto_source.state}}};
@@ -268,7 +279,7 @@ app.put('/settings', function (req, res) {
 	res.setHeader('content-type', 'application/json');
 	res.json();
 
-	sse_update(data);
+	//sse_update(data);
 });
 
 app.get('/paired', function (req, res) {
@@ -298,4 +309,5 @@ for (var i = 0; i < switch_array.length; i++)
 var server = http.createServer(app);
 server.listen(port, function () {
   source_change(-1);
+  exec(startup);
 });
