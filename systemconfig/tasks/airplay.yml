@@ -67,8 +67,8 @@
 - name: Copy the Playback Start Event Script
   copy:
   args:
-    src: files/airplay-start.sh
-    dest: /opt/airplay-start.sh
+    src: files/airplay-playback.sh
+    dest: /opt/airplay-playback.sh
     mode: 0511
 
 - name: Set the Playback Start Event Script
