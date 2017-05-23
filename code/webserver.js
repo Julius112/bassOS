@@ -10,7 +10,7 @@ var id = 1;
 
 var switch_array = [{"id":1, "pin":17, "state":false},{"id":2, "pin":16, "state":false}];
 var settings = {"bluetooth" : true, "bluetooth_pairable" : false, "mpd" : "true", "airplay" : true, "auto_source" : false}; 
-var services = [{"name": "bluetooth", "state": "stopped", "start": ["/bin/sh", "-c", "/bin/systemctl", "start", "bt_speaker"], "stop": ["/bin/sh", "-c", "/bin/systemctl", "stop", "bt_speaker"], "playback_stop": ["/bin/sh", "-c", "/bin/systemctl", "restart", "bt_speaker"]}, {"name": "airplay", "state": "stopped", "start": ["/bin/sh", "-c", "/bin/systemctl", "start", "shairport-sync"], "stop": ["/bin/sh", "-c", "/bin/systemctl", "stop", "shairport-sync"], "playback_stop": ["/bin/sh", "-c", "/bin/systemctl", "restart", "shairport-sync"]}, {"name": "mpd", "state": "stopped", "start": ["/bin/sh", "-c", "/bin/systemctl", "start", "mpd"], "stop": ["/bin/sh", "-c", "/bin/systemctl", "stop", "mpd"], "playback_stop": ["mpc", "pause"]}];
+var services = [{"name": "bluetooth", "state": "stopped", "start": "/bin/systemctl start bt_speaker", "stop": "/bin/systemctl stop bt_speaker", "playback_stop": "/bin/systemctl restart bt_speaker"}, {"name": "airplay", "state": "stopped", "start": "/bin/systemctl start shairport-sync", "stop": "/bin/systemctl stop shairport-sync", "playback_stop": "/bin/systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "/bin/systemctl start mpd", "stop": "/bin/systemctl stop mpd", "playback_stop": "mpc pause"}];
 
 /* Webserver Configuration */
 var app = express();
