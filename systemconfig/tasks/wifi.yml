@@ -1,0 +1,48 @@
+---
+
+- name: Install Hotspot Packages
+  apt: name={{item}} state=latest update_cache=yes
+  with_items:
+   - dnsmasq
+   - hostapd
+
+- name: Setup wlan0 to be ingored by dhcpcd
+  copy:
+  args:
+    src: files/dhcpcd.conf
+    dest: /etc/dhcpcd.conf
+    mode: 664
+
+- name: Create the Network Interface Config
+  copy:
+  args:
+    src: files/interfaces
+    dest: /etc/network/interfaces
+    mode: 644
+
+- name: Create hostapd Configuration
+  copy:
+  args:
+    src: files/hostapd.conf
+    dest: /etc/hostapd/hostapd.conf
+
+- name: Link the Configuration to Daemon
+  copy:
+  args:
+    src: files/hostapd
+    dest: /etc/default/hostapd
+
+- name: Create hostapd Configuration
+  copy:
+  args:
+    src: files/dnsmasq.conf
+    dest: /etc/dnsmasq.conf
+
+- name: Enable the Services
+  systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - "dnsmasq"
+    - "hostapd"
