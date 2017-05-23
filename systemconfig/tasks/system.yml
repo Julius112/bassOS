@@ -13,3 +13,11 @@
     regexp: '^defaults.pcm.card'
     line: 'defaults.pcm.card 1'
   notify: Reload ALSA
+
+- name: Set the pretty hostname to BassOS
+  copy:
+    src: files/machine-info
+    dest: /etc/machine-info
+    mode: 0644
+
+#TODO: add tasks https://www.howtogeek.com/167195/how-to-change-your-raspberry-pi-or-other-linux-devices-hostname/

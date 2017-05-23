@@ -38,6 +38,12 @@
     mode: 0644
     remote_src: yes
 
+- name: Allow Bass-OS user to sudo #TODO security risk
+  copy:
+    src: files/011_app-nopasswd
+    dest: /etc/sudoers.d/011_app-nopasswd
+    mode: 0440
+
 - name: Enable Bass-OS Service
   systemd:
     name: bass-os
