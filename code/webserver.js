@@ -110,8 +110,16 @@ function auto_source_change(state) {
 	source_change(-1);
 }
 
+function debug_print_services() {
+	console.log("-----------------");
+	for (var i = 0; i < services.length; i++) {
+		console.log(services[i].name+": "+services[i].state);
+	}
+	console.log("-----------------");
+}
+
 function source_change(id) {
-	console.log("source_change: "+id);
+	//console.log("source_change: "+id);
 	if (id < 0) {
 		if (settings.auto_source)
 			for (var i = 0; i < services.length; i++)
@@ -183,7 +191,9 @@ function source_change(id) {
 			if (settings.auto_source) {
                         	for (var i = 0; i < services.length; i++) {
                         	        if (services[i].state === "playing") {
-						services[i].state = "active";
+						//The mpd-watchdog will notify about beeing paused
+						if (!(services[i].name === "mpd"))
+							services[i].state = "active";
 						exec(services[i].playback_stop);
                         	        }
                         	}
@@ -199,6 +209,7 @@ function source_change(id) {
 			services[id].state = "playing";
 		}
 	}
+	debug_print_services();
 }
 
 app.put('/switch', function (req, res) {
@@ -242,6 +253,7 @@ app.put('/halt', function (req, res) {
 });
 
 app.put('/playback', function (req, res) {
+	//console.log("Playback change: "+ req.body.service);
 	for (var i = 0; i < services.length; i++) {
 		if(services[i].name === req.body.service) {
 			source_change(i);
