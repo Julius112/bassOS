@@ -64,18 +64,21 @@
     dest: /usr/local/etc/shairport-sync.conf
     owner: shairport-sync
 
-- name: Copy the Playback Start Event Script
+- name: Copy the Playback Event Scripts
   copy:
   args:
-    src: files/airplay-playback.sh
-    dest: /opt/airplay-playback.sh
-    mode: 0511
+    src: "files/{{ item }}"
+    dest: "/opt/{{ item }}"
+    mode: 0755
+  with_items:
+    - "airplay-stop.sh"
+    - "airplay-start.sh"
 
 - name: Set the Playback Start Event Script
   lineinfile:
     dest: /lib/systemd/system/shairport-sync.service
     regexp: '^ExecStart=/usr/local/bin/shairport-sync'
-    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-playback.sh -E /opt/airplay-playback.sh'
+    line: 'ExecStart=/usr/local/bin/shairport-sync -B /opt/airplay-start.sh -E /opt/airplay-stop.sh'
 
 - name: Disable Shairport-sync Service
   systemd:

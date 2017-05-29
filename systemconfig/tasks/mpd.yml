@@ -26,7 +26,7 @@
   args:
     src: files/mpd-watchdog.sh
     dest: /opt/mpd-watchdog.sh
-    mode: 0511
+    mode: 0755
 
 - name: Copy the mpd Watchdog Script
   copy:
