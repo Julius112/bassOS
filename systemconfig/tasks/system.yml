@@ -20,4 +20,11 @@
     dest: /etc/machine-info
     mode: 0644
 
+- name: Enable Automount of USB devices
+  copy:
+  args:
+    src: files/11-media-by-label-auto-mount.rules
+    dest: /etc/udev/rules.d/11-media-by-label-auto-mount.rules
+    mode: 0644
+
 #TODO: add tasks https://www.howtogeek.com/167195/how-to-change-your-raspberry-pi-or-other-linux-devices-hostname/
