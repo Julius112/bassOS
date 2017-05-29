@@ -27,6 +27,8 @@
     src: files/mpd-watchdog.sh
     dest: /opt/mpd-watchdog.sh
     mode: 0511
+    owner: mpd
+    group: mpd
 
 - name: Copy the mpd Watchdog Script
   copy:
