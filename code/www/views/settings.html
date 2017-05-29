@@ -23,6 +23,18 @@
 			<ons-icon icon="ion-bluetooth" class="list__item__icon"></ons-icon>
 		</div>
 		<div class="center">
+			<span class="list__item__title">mpd</span>
+			<span class="list__item__subtitle">Aktiviert</span>
+		</div>
+		<label class="right">
+			<ons-switch ng-model="settings.mpd.state" my-touchend="settings_change({'mpd':settings.mpd})" ng-disabled="!settings.mpd.active"></ons-switch>
+		</label>
+	</ons-list-item>
+	<ons-list-item>
+		<div class="left">
+			<ons-icon icon="ion-bluetooth" class="list__item__icon"></ons-icon>
+		</div>
+		<div class="center">
 			<span class="list__item__title">Bluetooth</span>
 			<span class="list__item__subtitle">Aktiviert</span>
 		</div>

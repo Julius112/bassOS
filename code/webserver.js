@@ -279,7 +279,7 @@ app.put('/settings', function (req, res) {
 	res.setHeader('content-type', 'application/json');
 	res.json();
 
-	//sse_update(data);
+	sse_update(data);
 });
 
 app.get('/paired', function (req, res) {
