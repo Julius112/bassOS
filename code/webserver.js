@@ -11,7 +11,11 @@ var id = 1;
 var startup = "sudo ogg123 /usr/share/sounds/freedesktop/stereo/service-login.oga"
 var switch_array = [{"id":1, "pin":17, "state":false},{"id":2, "pin":16, "state":false}];
 var settings = {"bluetooth" : true, "bluetooth_pairable" : false, "mpd" : "true", "airplay" : true, "auto_source" : "true"}; 
-var services = [{"name": "bluetooth", "state": "stopped", "start": "sudo /bin/systemctl start bt_speaker", "stop": "sudo /bin/systemctl stop bt_speaker", "playback_stop": "sudo /bin/systemctl restart bt_speaker"}, {"name": "airplay", "state": "stopped", "start": "sudo /bin/systemctl start shairport-sync", "stop": "sudo /bin/systemctl stop shairport-sync", "playback_stop": "sudo /bin/systemctl restart shairport-sync"}, {"name": "mpd", "state": "stopped", "start": "sudo /bin/systemctl start mpd", "stop": "sudo /bin/systemctl stop mpd", "playback_stop": "mpc pause"}];
+var services = [
+	{"name": "bluetooth", "state": "stopped", "start": "sudo /bin/systemctl start bt_speaker", "stop": "sudo /bin/systemctl stop bt_speaker", "playback_stop": "sudo /bin/systemctl restart bt_speaker"},
+	{"name": "airplay", "state": "stopped", "start": "sudo /bin/systemctl start shairport-sync", "stop": "sudo /bin/systemctl stop shairport-sync", "playback_stop": "sudo /bin/systemctl restart shairport-sync"},
+	{"name": "mpd", "state": "stopped", "start": "sudo /bin/systemctl start mpd.socket && sudo /bin/systemctl start mpd && sudo /bin/systemctl start mpd-watchdog", "stop": "sudo /bin/systemctl stop mpd-watchdog && sudo /bin/systemctl stop mpd.socket && sudo /bin/systemctl stop mpd", "playback_stop": "mpc pause"}
+];
 
 /* Webserver Configuration */
 var app = express();
@@ -99,7 +103,7 @@ function service_change(id, state) {
 	}
 	else {
 		if (services[id].state === "playing")
-			source_change(id);
+			source_change(id, false);
 		services[id].state = "stopped";
 		exec(services[id].stop);
 	}
@@ -118,7 +122,7 @@ function debug_print_services() {
 	console.log("-----------------");
 }
 
-function source_change(id) {
+function source_change(id, playback) {
 	//console.log("source_change: "+id);
 	if (id < 0) {
 		if (settings.auto_source)
@@ -171,7 +175,7 @@ function source_change(id) {
 		}
 	}
 	else {
-		if (services[id].state === "playing") {
+		if (!playback) {
 			if (!settings.auto_source) {
                        		for (var i = 0; i < services.length; i++) {
 					if (i === id)
@@ -253,10 +257,10 @@ app.put('/halt', function (req, res) {
 });
 
 app.put('/playback', function (req, res) {
-	//console.log("Playback change: "+ req.body.service);
+	console.log("Playback change: "+ req.body.service+"->"+req.body.playback);
 	for (var i = 0; i < services.length; i++) {
 		if(services[i].name === req.body.service) {
-			source_change(i);
+			source_change(i, req.body.playback);
 		}
 	}
 	

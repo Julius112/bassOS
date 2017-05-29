@@ -35,12 +35,15 @@
     dest: /opt/bt-speaker
     force: yes
 
-- name: Copy the Playback Start Event Script
+- name: Copy the Playback Event Scripts
   copy:
   args:
-    src: files/bluetooth-playback.sh
-    dest: /opt/bluetooth-playback.sh
-    mode: 0511
+    src: "files/{{ item }}"
+    dest: "/opt/{{ item }}"
+    mode: 0755
+  with_items:
+    - "bluetooth-start.sh"
+    - "bluetooth-stop.sh"
 
 - name: Install the bt-speaker Service
   copy:
