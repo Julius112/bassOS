@@ -1,2 +1,0 @@
-- Running shell scripts from Server: AJAX with Angular $http service
-- Getting updates from server: continious connection over HTML5 Server-Sent Events
