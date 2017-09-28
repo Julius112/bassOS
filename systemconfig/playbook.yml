@@ -8,13 +8,13 @@
 
     - include: tasks/wifi.yml
 
-    #- include: tasks/bluetooth.yml
+    - include: tasks/bluetooth.yml
 
-    #- include: tasks/airplay.yml
+    - include: tasks/airplay.yml
 
-    #- include: tasks/mpd.yml
+    - include: tasks/mpd.yml
 
-    #- include: tasks/app.yml
+    - include: tasks/app.yml
 
   handlers:
     - name: Reload ALSA
