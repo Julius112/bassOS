@@ -1,0 +1,12 @@
+[Unit]
+Description="BassOS UI webapp service"
+
+[Service]
+TimeoutStartSec=0
+WorkingDirectory=/opt/bassOS-UI
+ExecStart=/usr/bin/npm start
+Restart=always
+User=app
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description="BassOS backend service"
+
+[Service]
+TimeoutStartSec=0
+WorkingDirectory=/opt/bassOS-service
+ExecStart=/usr/bin/npm start
+Restart=always
+User=app
+
+[Install]
+WantedBy=multi-user.target
