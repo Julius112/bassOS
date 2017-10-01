@@ -27,7 +27,7 @@
     repo: 'https://github.com/Julius112/{{ item }}.git'
     dest: /opt/{{ item }}
     force: yes
-    version: feature/refactoring
+    version: devel
   with_items:
     - bassOS-service
     - bassOS-UI
