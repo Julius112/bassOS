@@ -14,10 +14,13 @@
     createhome: no
     shell: /usr/bin/nologin
 
-- name: Install npm
+- name: Update apt to include Nodejs sources
+  shell: "curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -"
+
+- name: Install nodejs
   apt: name={{item}} state=latest update_cache=yes
   with_items:
-    - npm
+    - nodejs
 
 - name: Download Bass-OS Repositorys
   git:
@@ -56,6 +59,7 @@
     name: "{{ item }}"
     enabled: yes
     state: started
+    daemon-reload: yes
   with_items:
     - bass-os-service
     - bass-os-ui

@@ -14,9 +14,9 @@ while : ; do
 		if [[ $(mpc) == *paused* ]]
 		then
 			paused="true"
-			curl -H 'Content-Type: application/json' -X PUT -d '{"playback":"false"}' localhost:3000/services/mpd
+			curl -H 'Content-Type: application/json' -X PUT -d '{"playback":false}' localhost:3000/services/mpd
 		else
 			paused="false"
-			curl -H 'Content-Type: application/json' -X PUT -d '{"playback":"true"}' localhost:3000/services/mpd
+			curl -H 'Content-Type: application/json' -X PUT -d '{"playback":true}' localhost:3000/services/mpd
 		fi
 done
