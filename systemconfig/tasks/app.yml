@@ -32,6 +32,12 @@
     - bassOS-service
     - bassOS-UI
 
+- name: Download Websockify Repository
+  git:
+    repo: 'https://github.com/novnc/websockify.git'
+    dest: /opt/websockify
+    force: yes
+
 - name: Install the Bass-OS dependencies
   npm:
     path: /opt/{{ item }}
@@ -53,6 +59,7 @@
   with_items:
     - bass-os-service
     - bass-os-ui
+    - websockify
 
 - name: Enable Bass-OS Services
   systemd:
@@ -63,3 +70,4 @@
   with_items:
     - bass-os-service
     - bass-os-ui
+    - websockify
